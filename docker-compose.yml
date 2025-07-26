@@ -88,7 +88,7 @@ services:
     image: "tenzir/tenzir:latest"
     pull_policy: always
     environment:
-      - TENZIR_TOKEN=
+      - TENZIR_TOKEN=token here 
       - TENZIR_PLATFORM_CONTROL_ENDPOINT=wss://ws.tenzir.app/production
       - TENZIR_ENDPOINT=tenzir-node:5158
     entrypoint:
