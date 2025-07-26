@@ -30,6 +30,9 @@
                     <secret_access_key>password</secret_access_key>
                     <region></region>
                     <metadata_path>/var/lib/clickhouse/disks/s3/</metadata_path>
+                    <connect_timeout_ms>10000</connect_timeout_ms>
+                    <request_timeout_ms>30000</request_timeout_ms>
+                    <retry_attempts>3</retry_attempts>
                 </s3>
                 <s3_cache>
                     <type>cache</type>
