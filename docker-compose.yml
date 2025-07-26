@@ -35,7 +35,7 @@ services:
       - app-network
 
   minio:
-    image: quay.io/minio/minio
+    image: minio/minio:latest
     container_name: minio
     hostname: minio
     command: server --address 0.0.0.0:10000 --console-address 0.0.0.0:10001 /data
@@ -84,16 +84,17 @@ services:
 
 
   tenzir-node:
-    container_name: "solstice"
+    container_name: "ctf"
     image: "tenzir/tenzir:latest"
     pull_policy: always
     environment:
-      - TENZIR_TOKEN=token here 
+      - TENZIR_TOKEN=add token here
       - TENZIR_PLATFORM_CONTROL_ENDPOINT=wss://ws.tenzir.app/production
       - TENZIR_ENDPOINT=tenzir-node:5158
     entrypoint:
       - tenzir-node
     volumes:
+      - ./tenzir_pipline/tenzir.yaml:/opt/tenzir/etc/tenzir/tenzir.yaml
       - tenzir-lib:/var/lib/tenzir/
       - tenzir-log:/var/log/tenzir/
     healthcheck:
