@@ -48,7 +48,7 @@ tenzir:
         }
         let $input_path = "s3://admin:password@raw/conn.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         ocsf.activity_id = $conn_states[zeek.conn_state]? else 6
@@ -133,7 +133,7 @@ tenzir:
           bytes_missed: move zeek.missed_bytes,
           packets_in: move zeek.resp_pkts,
           packets_out: move zeek.orig_pkts,
-          total_bytes: zeek.orig_bytes + zeek.resp_bytes,
+          bytes: zeek.orig_bytes + zeek.resp_bytes,
           total_packets: zeek.orig_pkts + zeek.resp_pkts,
         }
         this = {...ocsf, unmapped: zeek.print_ndjson()}
@@ -152,7 +152,7 @@ tenzir:
           ipv6: 41,
         }
         let $input_path = "s3://admin:password@raw/dns.json.gz?endpoint_override=http://minio:10000"
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         drop _path
         this = { zeek: this }
         // === Classification ===
@@ -252,7 +252,7 @@ tenzir:
         ]
         let $input_path = "s3://admin:password@raw/ftp.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         ocsf.activity_id = $commands[zeek.command]? else 0
@@ -336,7 +336,7 @@ tenzir:
         }
         let $input_path = "s3://admin:password@raw/http.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         ocsf.activity_id = $methods[zeek.method]? else 0
@@ -506,7 +506,7 @@ tenzir:
       definition: |
         let $input_path = "s3://admin:password@raw/smb_files.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         // The Zeek actions don't naturally map to the corresponding OCSF zeek
@@ -616,7 +616,7 @@ tenzir:
         }
         let $input_path = "s3://admin:password@raw/ssh.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         // The activity attributes relate to the underlying TCP connection. Since
@@ -734,7 +734,7 @@ tenzir:
       definition: |
         let $input_path = "s3://admin:password@raw/smtp.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         ocsf.activity_id = 1
@@ -812,7 +812,7 @@ tenzir:
         }
         let $input_path = "s3://admin:password@raw/rdp.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         ocsf.activity_id = 6
@@ -940,7 +940,7 @@ tenzir:
         }
         let $input_path = "s3://admin:password@raw/ssl.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         ocsf.activity_id = 6
@@ -1038,7 +1038,7 @@ tenzir:
       definition: |
         let $input_path = "s3://admin:password@raw/x509.json.gz?endpoint_override=http://minio:10000"
 
-        from $input_path { decompress_gzip | read_zeek_json }
+        from $input_path { decompress_gzip | read_zeek_json | timeshift ts, start = now() }
         this = { zeek: this }
         // === Classification ===
         ocsf.activity_id = 6

@@ -1,0 +1,491 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "vis": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 0,
+          "rawQuery": true,
+          "rawSql": "SELECT time, source, events\nFROM (\n  SELECT\n    toStartOfMinute(time) as time,\n    'Network' as source,\n    count(*) as events\n  FROM network_activity\n  WHERE time >= now() - INTERVAL 24 HOUR\n  GROUP BY time\n  UNION ALL\n  SELECT\n    toStartOfMinute(time) as time,\n    'HTTP' as source,\n    count(*) as events\n  FROM http_activity\n  WHERE time >= now() - INTERVAL 24 HOUR\n  GROUP BY time\n  UNION ALL\n  SELECT\n    toStartOfMinute(time) as time,\n    'SSH' as source,\n    count(*) as events\n  FROM ssh_activity\n  WHERE time >= now() - INTERVAL 24 HOUR\n  GROUP BY time\n)\nORDER BY time ASC, source ASC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {"parameters": [], "type": "function"}
+            ],
+            "groupBy": [
+              {"property": {"type": "string"}, "type": "groupBy"}
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Multi-Source Event Volume (Anomaly Detection)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 2,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  src_endpoint.ip as source_ip,\n  'High Connection Rate' as anomaly_type,\n  count(*) as connection_count,\n  'Network' as source_table\nFROM network_activity\nWHERE time >= now() - INTERVAL 24 HOUR\n  AND src_endpoint.ip IS NOT NULL\nGROUP BY src_endpoint.ip\nHAVING count(*) > 50\nUNION ALL\nSELECT\n  src_endpoint.ip as source_ip,\n  'Multiple SSH Attempts' as anomaly_type,\n  count(*) as connection_count,\n  'SSH' as source_table\nFROM ssh_activity\nWHERE time >= now() - INTERVAL 24 HOUR\n  AND src_endpoint.ip IS NOT NULL\n  AND severity IN ('Medium', 'High')\nGROUP BY src_endpoint.ip\nHAVING count(*) > 5\nUNION ALL\nSELECT\n  src_endpoint.ip as source_ip,\n  'HTTP Scanning' as anomaly_type,\n  count(*) as connection_count,\n  'HTTP' as source_table\nFROM http_activity\nWHERE time >= now() - INTERVAL 24 HOUR\n  AND src_endpoint.ip IS NOT NULL\nGROUP BY src_endpoint.ip\nHAVING count(*) > 20\nORDER BY connection_count DESC\nLIMIT 15",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {"parameters": [], "type": "function"}
+            ],
+            "groupBy": [
+              {"property": {"type": "string"}, "type": "groupBy"}
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Suspicious IP Addresses (Cross-Table Analysis)",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 50
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 2,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  'High Severity Events' as category,\n  count(*) as count,\n  'SSH' as source\nFROM ssh_activity\nWHERE time >= now() - INTERVAL 24 HOUR\n  AND severity IN ('Medium', 'High')\nUNION ALL\nSELECT\n  'Failed Connections' as category,\n  count(*) as count,\n  'Network' as source\nFROM network_activity\nWHERE time >= now() - INTERVAL 24 HOUR\n  AND status IN ('Failure', 'Reset', 'Refuse')\nUNION ALL\nSELECT\n  'Suspicious HTTP Methods' as category,\n  count(*) as count,\n  'HTTP' as source\nFROM http_activity\nWHERE time >= now() - INTERVAL 24 HOUR\n  AND activity_name IN ('POST', 'PUT', 'DELETE', 'CONNECT')\nUNION ALL\nSELECT\n  'RDP Connections' as category,\n  count(*) as count,\n  'RDP' as source\nFROM rdp_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nORDER BY count DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {"parameters": [], "type": "function"}
+            ],
+            "groupBy": [
+              {"property": {"type": "string"}, "type": "groupBy"}
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Anomaly Categories Distribution",
+      "type": "table"
+    },
+
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "vis": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 0,
+          "rawQuery": true,
+          "rawSql": "SELECT time, metric, count\nFROM (\n  SELECT\n    toStartOfMinute(time) as time,\n    'SSH High Severity' as metric,\n    count(*) as count\n  FROM ssh_activity\n  WHERE time >= now() - INTERVAL 24 HOUR\n    AND severity IN ('Medium', 'High')\n  GROUP BY time\n  UNION ALL\n  SELECT\n    toStartOfMinute(time) as time,\n    'Network Failures' as metric,\n    count(*) as count\n  FROM network_activity\n  WHERE time >= now() - INTERVAL 24 HOUR\n    AND status IN ('Failure', 'Reset', 'Refuse')\n  GROUP BY time\n  UNION ALL\n  SELECT\n    toStartOfMinute(time) as time,\n    'Suspicious HTTP' as metric,\n    count(*) as count\n  FROM http_activity\n  WHERE time >= now() - INTERVAL 24 HOUR\n    AND activity_name IN ('POST', 'PUT', 'DELETE', 'CONNECT')\n  GROUP BY time\n)\nORDER BY time ASC, metric ASC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {"parameters": [], "type": "function"}
+            ],
+            "groupBy": [
+              {"property": {"type": "string"}, "type": "groupBy"}
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Anomaly Metrics Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 2,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  src_endpoint.ip as source_ip,\n  dst_endpoint.ip as target_ip,\n  'Multiple Protocol Activity' as anomaly_description,\n  count(*) as event_count,\n  groupArray(activity_name) as activities,\n  time\nFROM (\n  SELECT src_endpoint.ip, dst_endpoint.ip, activity_name, time FROM network_activity WHERE time >= now() - INTERVAL 24 HOUR\n  UNION ALL\n  SELECT src_endpoint.ip, dst_endpoint.ip, activity_name, time FROM http_activity WHERE time >= now() - INTERVAL 24 HOUR\n  UNION ALL\n  SELECT src_endpoint.ip, dst_endpoint.ip, activity_name, time FROM ssh_activity WHERE time >= now() - INTERVAL 24 HOUR\n  UNION ALL\n  SELECT src_endpoint.ip, dst_endpoint.ip, activity_name, time FROM rdp_activity WHERE time >= now() - INTERVAL 24 HOUR\n) combined_events\nWHERE src_endpoint.ip IS NOT NULL AND dst_endpoint.ip IS NOT NULL\nGROUP BY src_endpoint.ip, dst_endpoint.ip, time\nHAVING count(*) > 3\nORDER BY event_count DESC, time DESC\nLIMIT 20",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {"parameters": [], "type": "function"}
+            ],
+            "groupBy": [
+              {"property": {"type": "string"}, "type": "groupBy"}
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Cross-Protocol Anomalies (Multi-Table Analysis)",
+      "type": "table"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["anomaly", "security", "multi-table"],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Anomaly Detection Dashboard",
+  "uid": "anomaly-detection",
+  "version": 1,
+  "weekStart": ""
+} 

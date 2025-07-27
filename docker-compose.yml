@@ -27,6 +27,7 @@ services:
     hostname: grafana
     volumes:
       - ${PWD}/fs/volumes/grafana/etc/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ${PWD}/fs/volumes/grafana/etc/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
@@ -88,7 +89,7 @@ services:
     image: "tenzir/tenzir:latest"
     pull_policy: always
     environment:
-      - TENZIR_TOKEN=add token here
+      - TENZIR_TOKEN=   add token here
       - TENZIR_PLATFORM_CONTROL_ENDPOINT=wss://ws.tenzir.app/production
       - TENZIR_ENDPOINT=tenzir-node:5158
     entrypoint:
