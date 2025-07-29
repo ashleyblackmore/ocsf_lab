@@ -24,7 +24,355 @@
   "panels": [
     {
       "datasource": {
-        "type": "grafana-clickhouse-datasource",
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  dst_endpoint.ip as dst_endpoint_ip,\n  dst_endpoint.port as dst_endpoint_port,\n  connection_info.protocol_name as connection_info_protocol_name,\n  activity_name,\n  count(*) as connection_count\nFROM network_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)\nGROUP BY dst_endpoint.ip, dst_endpoint.port, connection_info.protocol_name, activity_name\nORDER BY count(*) DESC\nLIMIT 15",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Top Destination IPs and Ports",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  time,\n  src_endpoint.ip as src_endpoint_ip,\n  dst_endpoint.ip as dst_endpoint_ip,\n  dst_endpoint.port as dst_endpoint_port,\n  connection_info.protocol_name as connection_info_protocol_name,\n  activity_name\nFROM network_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)\n  AND (dst_endpoint.port IN (80, 443, 8080, 8443, 21, 22, 23, 25, 53, 110, 143, 993, 995) OR dst_endpoint.port IS NULL)\nORDER BY time DESC\nLIMIT 15",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Suspicious Port Activity",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  time,\n  src_endpoint.ip as src_endpoint_ip,\n  dst_endpoint.ip as dst_endpoint_ip,\n  query.hostname as query_hostname,\n  query.type as query_type,\n  rcode\nFROM dns_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)\nORDER BY time DESC\nLIMIT 15",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "DNS Query Analysis",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  time,\n  src_endpoint.ip as src_endpoint_ip,\n  dst_endpoint.ip as dst_endpoint_ip,\n  http_request.http_method as http_request_http_method,\n  http_request.url.path as http_request_url_path,\n  http_request.user_agent as http_request_user_agent\nFROM http_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)\nORDER BY time DESC\nLIMIT 15",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "HTTP Traffic Analysis",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
         "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
@@ -82,9 +430,9 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 16
       },
-      "id": 1,
+      "id": 5,
       "options": {
         "legend": {
           "calcs": [],
@@ -99,13 +447,13 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-clickhouse-datasource",
+            "type": "clickhouse",
             "uid": "PDEE91DDB90597936"
           },
           "editorMode": "code",
           "format": 0,
           "rawQuery": true,
-          "rawSql": "SELECT\n  toStartOfMinute(time) as time,\n  count(*) as connections\nFROM ssh_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY time\nORDER BY time",
+          "rawSql": "SELECT\n  toStartOfMinute(time) as time,\n  count(*) as events\nFROM network_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)\nGROUP BY time\nORDER BY time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -126,12 +474,12 @@
           }
         }
       ],
-      "title": "SSH Connections Over Time",
+      "title": "Network Activity Timeline",
       "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "grafana-clickhouse-datasource",
+        "type": "clickhouse",
         "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
@@ -140,169 +488,31 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "vis": false
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "query": "SELECT severity, count() as count FROM ssh_activity WHERE $__timeFilter(time) GROUP BY severity ORDER BY count DESC",
-          "refId": "A"
-        }
-      ],
-      "title": "SSH Severity Distribution",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
             },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 8
-      },
-      "id": 3,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "editorMode": "code",
-          "format": 2,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  src_endpoint.ip as source_ip,\n  count(*) as connection_count,\n  severity\nFROM ssh_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY src_endpoint.ip, severity\nORDER BY connection_count DESC\nLIMIT 10",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Recent SSH Connections",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
           },
           "mappings": [],
@@ -318,99 +528,8 @@
                 "value": 80
               }
             ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 16
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
           },
-          "editorMode": "code",
-          "format": 1,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  activity_name,\n  count(*) as count\nFROM ssh_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY activity_name\nORDER BY count DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "SSH Authentication Types",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "unit": "short"
         },
         "overrides": []
       },
@@ -419,190 +538,29 @@
         "w": 12,
         "x": 12,
         "y": 16
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "editorMode": "code",
-          "format": 1,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  severity,\n  count(*) as count\nFROM ssh_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY severity\nORDER BY count DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "SSH Connection Directions",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 24
       },
       "id": 6,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
         },
-        "showHeader": true
-      },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "query": "SELECT src_endpoint.ip as source_ip, count() as connection_count, severity FROM ssh_activity WHERE $__timeFilter(time) GROUP BY src_endpoint.ip, severity ORDER BY connection_count DESC LIMIT 10",
-          "refId": "A"
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
         }
-      ],
-      "title": "Top SSH Source IPs by Auth Attempts",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 32
-      },
-      "id": 7,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "10.0.0",
       "targets": [
         {
           "datasource": {
-            "type": "grafana-clickhouse-datasource",
+            "type": "clickhouse",
             "uid": "PDEE91DDB90597936"
           },
           "editorMode": "code",
-          "format": 2,
+          "format": 0,
           "rawQuery": true,
-          "rawSql": "SELECT\n  src_endpoint.ip as source_ip,\n  dst_endpoint.ip as destination_ip,\n  severity,\n  time\nFROM ssh_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nORDER BY time DESC\nLIMIT 15",
+          "rawSql": "SELECT\n  toStartOfMinute(time) as time,\n  count(*) as events\nFROM dns_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)\nGROUP BY time\nORDER BY time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -623,29 +581,29 @@
           }
         }
       ],
-      "title": "SSH Client/Server Fingerprints",
-      "type": "table"
+      "title": "DNS Activity Timeline",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [
-    "ssh",
-    "security",
-    "network"
+    "ctf",
+    "network",
+    "analysis"
   ],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-48h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "SSH Activity Dashboard",
-  "uid": "ssh-activity",
+  "title": "UISGCON CTF - Network Traffic Analysis",
+  "uid": "ctf-network-analysis",
   "version": 1,
   "weekStart": ""
 } 

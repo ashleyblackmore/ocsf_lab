@@ -24,7 +24,355 @@
   "panels": [
     {
       "datasource": {
-        "type": "grafana-clickhouse-datasource",
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  'CTF Challenge Summary' as Dashboard,\n  'Infection Timeline Analysis' as Description,\n  'ctf-infection-timeline' as Dashboard_UID,\n  'Track the Hancitor malware infection timeline' as Purpose\nUNION ALL\nSELECT\n  'Hancitor Malware Analysis' as Dashboard,\n  'Deep dive into Hancitor-specific indicators' as Description,\n  'ctf-hancitor-analysis' as Dashboard_UID,\n  'Analyze Hancitor malware behaviors and patterns' as Purpose\nUNION ALL\nSELECT\n  'Answer Validation' as Dashboard,\n  'Validate CTF answers with evidence' as Description,\n  'ctf-answer-validation' as Dashboard_UID,\n  'Verify CTF challenge answers with network evidence' as Purpose\nUNION ALL\nSELECT\n  'Network Traffic Analysis' as Dashboard,\n  'Comprehensive network traffic analysis' as Description,\n  'ctf-network-analysis' as Dashboard_UID,\n  'Monitor all suspicious network activity patterns' as Purpose\nUNION ALL\nSELECT\n  'File Download Analysis' as Dashboard,\n  'Track malicious file downloads and transfers' as Description,\n  'ctf-file-analysis' as Dashboard_UID,\n  'Analyze file download and data exfiltration attempts' as Purpose",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "UISGCON CTF Dashboard Overview",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  'Key Finding 1' as Finding,\n  'Malware Family' as Category,\n  'Hancitor' as Value,\n  'Identified through network traffic analysis' as Evidence\nUNION ALL\nSELECT\n  'Key Finding 2' as Finding,\n  'Infection Time' as Category,\n  'Last 48 hours' as Value,\n  'First malicious network activity detected' as Evidence\nUNION ALL\nSELECT\n  'Key Finding 3' as Finding,\n  'Infected IP' as Category,\n  '172.16.1.125' as Value,\n  'Source of all malicious network traffic' as Evidence\nUNION ALL\nSELECT\n  'Key Finding 4' as Finding,\n  'C2 Communication' as Category,\n  'HTTP/HTTPS traffic to external servers' as Value,\n  'Command and control communication detected' as Evidence\nUNION ALL\nSELECT\n  'Key Finding 5' as Finding,\n  'File Downloads' as Category,\n  'Malicious payload downloads' as Value,\n  'HTTP requests to /download endpoints' as Evidence",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "CTF Key Findings Summary",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  count(*) as total_network_events,\n  count(DISTINCT dst_endpoint.ip) as unique_destination_ips,\n  count(DISTINCT dst_endpoint.port) as unique_ports,\n  count(DISTINCT connection_info.protocol_name) as protocols_used\nFROM network_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Network Activity Statistics",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "clickhouse",
+            "uid": "PDEE91DDB90597936"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "rawQuery": true,
+          "rawSql": "SELECT\n  count(*) as total_http_requests,\n  count(DISTINCT http_request.http_method) as http_methods,\n  count(DISTINCT http_request.url.path) as unique_uris,\n  count(DISTINCT http_request.user_agent) as user_agents\nFROM http_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "HTTP Activity Statistics",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "clickhouse",
         "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
@@ -80,11 +428,11 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 0
+        "y": 16
       },
-      "id": 1,
+      "id": 5,
       "options": {
         "legend": {
           "calcs": [],
@@ -99,13 +447,13 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-clickhouse-datasource",
+            "type": "clickhouse",
             "uid": "PDEE91DDB90597936"
           },
           "editorMode": "code",
           "format": 0,
           "rawQuery": true,
-          "rawSql": "SELECT\n  toStartOfMinute(time) as time,\n  count(*) as connections\nFROM rdp_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY time\nORDER BY time",
+          "rawSql": "SELECT\n  toStartOfMinute(time) as time,\n  count(*) as events\nFROM network_activity\nWHERE time >= now() - INTERVAL 48 HOUR\n  AND (src_endpoint.ip = '172.16.1.125' OR src_endpoint.ip IS NULL)\nGROUP BY time\nORDER BY time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -126,479 +474,29 @@
           }
         }
       ],
-      "title": "RDP Connections Over Time",
+      "title": "Overall Activity Timeline",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "editorMode": "code",
-          "format": 1,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  status,\n  count(*) as count\nFROM rdp_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY status\nORDER BY count DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "RDP Connection Status Distribution",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 8
-      },
-      "id": 3,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "editorMode": "code",
-          "format": 2,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  src_endpoint.ip as source_ip,\n  dst_endpoint.ip as destination_ip,\n  status,\n  time\nFROM rdp_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nORDER BY time DESC\nLIMIT 20",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Recent RDP Connections",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 16
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "editorMode": "code",
-          "format": 1,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  severity,\n  count(*) as count\nFROM rdp_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY severity\nORDER BY count DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "RDP Encryption Key Lengths",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 16
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "editorMode": "code",
-          "format": 1,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  activity_name,\n  count(*) as count\nFROM rdp_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY activity_name\nORDER BY count DESC",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "RDP Color Depth Distribution",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 24
-      },
-      "id": 6,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "editorMode": "code",
-          "format": 2,
-          "rawQuery": true,
-          "rawSql": "SELECT\n  src_endpoint.ip as source_ip,\n  count(*) as connection_count,\n  severity\nFROM rdp_activity\nWHERE time >= now() - INTERVAL 24 HOUR\nGROUP BY src_endpoint.ip, severity\nORDER BY connection_count DESC\nLIMIT 10",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Top RDP Source IPs",
-      "type": "table"
     }
   ],
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [
-    "rdp",
-    "security",
-    "network"
+    "ctf",
+    "home",
+    "overview"
   ],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-48h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "RDP Activity Dashboard",
-  "uid": "rdp-activity",
+  "title": "UISGCON CTF - Home Dashboard",
+  "uid": "ctf-home",
   "version": 1,
   "weekStart": ""
 } 
