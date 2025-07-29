@@ -12,6 +12,12 @@ services:
     ports:
       - "127.0.0.1:8123:8123"
       - "127.0.0.1:9000:9000"
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - app-network    
     depends_on:
@@ -31,7 +37,8 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
-      - clickhouse
+      clickhouse:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -65,7 +72,8 @@ services:
       /usr/bin/mc admin info minio;
       /usr/bin/mc mb minio/ctf;
       /usr/bin/mc policy set public minio/ctf;
-      /usr/bin/mc cp /ctf/* minio/ctf/;
+      /usr/bin/mc cp -r /ctf/uisgcon-ctf-1 minio/ctf/;
+      /usr/bin/mc cp -r /ctf/uisgcon-ctf-2 minio/ctf/;
       /usr/bin/mc rm -r --force minio/raw;
       /usr/bin/mc admin info minio;
       /usr/bin/mc mb minio/raw;
@@ -79,7 +87,9 @@ services:
       "
     volumes:
       - ./raw_data/zeek-json:/data
-      - ./raw_data/ctf:/ctf
+      - ./raw_data/ctf/:/ctf
+      - ./raw_data/ctf/uisgcon-ctf-1:/ctf/uisgcon-ctf-1
+      - ./raw_data/ctf/uisgcon-ctf-2:/ctf/uisgcon-ctf-2
     networks:
       - app-network
 
@@ -87,10 +97,15 @@ services:
   tenzir-node:
     container_name: "ctf"
     image: "tenzir/tenzir:latest"
+    depends_on:
+      minio:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
     pull_policy: always
     environment:
-      - TENZIR_TOKEN=   add token here
-      - TENZIR_PLATFORM_CONTROL_ENDPOINT=wss://ws.tenzir.app/production
+      # - TENZIR_TOKEN=add token here
+      # - TENZIR_PLATFORM_CONTROL_ENDPOINT=wss://ws.tenzir.app/production
       - TENZIR_ENDPOINT=tenzir-node:5158
     entrypoint:
       - tenzir-node
