@@ -1,132 +1,43 @@
-version: "3.8"
 services:
   clickhouse:
-    image: clickhouse/clickhouse-server
-    user: "101:101"
-    container_name: clickhouse
-    hostname: clickhouse
-    volumes:
-      - ${PWD}/fs/volumes/clickhouse/etc/clickhouse-server/config.d/config.xml:/etc/clickhouse-server/config.d/config.xml
-      - ${PWD}/fs/volumes/clickhouse/etc/clickhouse-server/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
-      - ${PWD}/fs/volumes/clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    image: clickhouse/clickhouse-server:latest
+    container_name: ocsf_clickhouse
     ports:
-      - "127.0.0.1:8123:8123"
-      - "127.0.0.1:9000:9000"
-    healthcheck:
-      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    networks:
-      - app-network    
-    depends_on:
-      minio:
-        condition: service_healthy
-      createbuckets:
-        condition: service_completed_successfully
-  grafana:
-    build: 
-      context: ${PWD}/docker_files/
-      dockerfile: grafana.Dockerfile
-    container_name: grafana
-    hostname: grafana
-    volumes:
-      - ${PWD}/fs/volumes/grafana/etc/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ${PWD}/fs/volumes/grafana/etc/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-    ports:
-      - "127.0.0.1:3000:3000"
-    depends_on:
-      clickhouse:
-        condition: service_healthy
-    networks:
-      - app-network
-
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    hostname: minio
-    command: server --address 0.0.0.0:10000 --console-address 0.0.0.0:10001 /data
-    ports:
-      - '127.0.0.1:10000:10000'
-      - '127.0.0.1:10001:10001'
+      - "8123:8123"  # HTTP port
+      - "9000:9000"  # Native port
     environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=password
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:10000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-      start_period: 40s
-    networks:
-      - app-network
-  createbuckets:
-    image: minio/mc
-    depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      until (/usr/bin/mc alias set minio http://minio:10000 admin password) do echo '...waiting...' && sleep 1; done;
-      /usr/bin/mc rm -r --force minio/ctf;
-      /usr/bin/mc admin info minio;
-      /usr/bin/mc mb minio/ctf;
-      /usr/bin/mc policy set public minio/ctf;
-      /usr/bin/mc cp -r /ctf/uisgcon-ctf-1 minio/ctf/;
-      /usr/bin/mc cp -r /ctf/uisgcon-ctf-2 minio/ctf/;
-      /usr/bin/mc rm -r --force minio/raw;
-      /usr/bin/mc admin info minio;
-      /usr/bin/mc mb minio/raw;
-      /usr/bin/mc policy set public minio/raw;
-      /usr/bin/mc cp /data/* minio/raw/;
-      /usr/bin/mc rm -r --force minio/clickhouse;
-      /usr/bin/mc admin info minio;
-      /usr/bin/mc mb minio/clickhouse;
-      /usr/bin/mc policy set public minio/clickhouse;
-      exit 0;
-      "
+      - CLICKHOUSE_DB=ocsf_data
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
     volumes:
-      - ./raw_data/zeek-json:/data
-      - ./raw_data/ctf/:/ctf
-      - ./raw_data/ctf/uisgcon-ctf-1:/ctf/uisgcon-ctf-1
-      - ./raw_data/ctf/uisgcon-ctf-2:/ctf/uisgcon-ctf-2
+      - clickhouse_data:/var/lib/clickhouse
+      - ./data:/data
+      - ./init:/docker-entrypoint-initdb.d
     networks:
-      - app-network
+      - ocsf_network
 
-
-  tenzir-node:
-    container_name: "ctf"
-    image: "tenzir/tenzir:latest"
-    depends_on:
-      minio:
-        condition: service_healthy
-      clickhouse:
-        condition: service_healthy
-    pull_policy: always
+  data-loader:
+    build: .
+    container_name: ocsf_data_loader
+    volumes:
+      - ./OCSF_data_cleaned:/data/ocsf
+      - ./scripts:/scripts
     environment:
-      # - TENZIR_TOKEN= add token
-      # - TENZIR_PLATFORM_CONTROL_ENDPOINT=wss://ws.tenzir.app/production
-      - TENZIR_ENDPOINT=tenzir-node:5158
-    entrypoint:
-      - tenzir-node
-    volumes:
-      - ./tenzir_pipline/tenzir.yaml:/opt/tenzir/etc/tenzir/tenzir.yaml
-      - tenzir-lib:/var/lib/tenzir/
-      - tenzir-log:/var/log/tenzir/
-    healthcheck:
-      test: tenzir --connection-timeout=30s --connection-retry-delay=1s 'api /ping'
-      interval: 30s
-      retries: 1
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_PORT=8123
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DB=ocsf_data
+    depends_on:
+      - clickhouse
     networks:
-      - app-network     
-networks:
-  app-network:
-    driver: bridge
+      - ocsf_network
+    command: ["python3", "/scripts/load_data.py"]
 
 volumes:
   clickhouse_data:
-  clickhouse_log:
-  minio_data:
-  tenzir_data:
-  tenzir-lib:
-  tenzir-log:
+
+networks:
+  ocsf_network:
+    driver: bridge 
