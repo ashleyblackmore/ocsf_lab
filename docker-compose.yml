@@ -16,6 +16,27 @@ services:
       - ./init:/docker-entrypoint-initdb.d
     networks:
       - ocsf_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ch-ui:
+    image: ghcr.io/caioricciuti/ch-ui:latest
+    container_name: ocsf_ch_ui
+    ports:
+      - "5521:5521"
+    environment:
+      - VITE_CLICKHOUSE_URL=http://localhost:8123
+      - VITE_CLICKHOUSE_USER=default
+      - VITE_CLICKHOUSE_PASS=
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    networks:
+      - ocsf_network
 
   data-loader:
     build: .
